@@ -1,20 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RecipeController!{% endblock %}
-
+{% block title %}Liste des recettes
+{% endblock %}
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+	<h1>Liste des recettes</h1>
+	<ul>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+		{# {{ dump(app.current_route) }} #}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/ADMIN/Desktop/TutoSymfony/src/Controller/RecipeController.php</code></li>
-        <li>Your template at <code>C:/Users/ADMIN/Desktop/TutoSymfony/templates/recipe/index.html.twig</code></li>
-    </ul>
-</div>
+		<li>
+			<ahref="{{url('recipe.show',{id:1,slug:'recette-1'})}}">Recette 1</a>
+		</li>
+		<li>
+			<ahref="{{url('recipe.show',{id:2,slug:'recette-2'})}}">Recette 2</a>
+		</li>
+
+	</ul>
 {% endblock %}

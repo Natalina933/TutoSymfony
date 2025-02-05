@@ -1,0 +1,7 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recette : {{ slug }}{% endblock %}
+{% block body %}
+<h1>Liste des recettes</h1>
+{{ slug }} {{ person.firstname }} {{ person.lastname }} {{ person.age }} {{ person.city }} {{ person.country }} {{ person.email }} {{ person.phone }}
+{% endblock %}
