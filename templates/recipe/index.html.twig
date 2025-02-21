@@ -7,13 +7,11 @@
 	<ul>
 
 		{# {{ dump(app.current_route) }} #}
+		{% for recipe in recipes %}
 
-		<li>
-			<ahref="{{url('recipe.show',{id:1,slug:'recette-1'})}}">Recette 1</a>
-		</li>
-		<li>
-			<ahref="{{url('recipe.show',{id:2,slug:'recette-2'})}}">Recette 2</a>
-		</li>
-
+			<li>
+				<a href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug }) }}">{{ recipe.title }}</a>
+			</li>
+		{% endfor %}
 	</ul>
 {% endblock %}

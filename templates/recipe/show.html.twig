@@ -1,7 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recette : {{ slug }}{% endblock %}
+{% block title %}Recette :
+	{{ recipe.title }}
+{% endblock %}
+
 {% block body %}
-<h1>Liste des recettes</h1>
-{{ slug }} {{ person.firstname }} {{ person.lastname }} {{ person.age }} {{ person.city }} {{ person.country }} {{ person.email }} {{ person.phone }}
+	<h1>Liste des recettes</h1>
+
+	<h2>Recette
+		{{ recipe.id }}
+		:
+		{{ recipe.title }}</h2>
+
+	<p>{{ recipe.content }}</p>
+
+	{# {% if recipe.user is not empty %}
+			<p>Créée par :
+				{{ recipe.user.username }}</p>
+		{% else %}
+			<p>Créée par : Inconnu</p>
+		{% endif %} #}
+
+	<p>Ajoutée le :
+		{{ recipe.createdAt|date('d/m/Y') }}</p>
 {% endblock %}
