@@ -24,16 +24,23 @@ final class RecipeController extends AbstractController
     {
         $recipe = $reposotory->find($id);
         // dd($recipe);
-        return $this->render('recipe/show.html.twig', [
-            'recipe' => $recipe,
-            'slug' => $slug,
-            'id' => $id,
-            'name' => '<strong>Recette ' . $slug . '</strong>',
-            'person' => [
-                'firstname' => 'John',
-                'lastname' => 'Doe',
+        if (!$recipe) {
+            // Si la recette n'est pas trouvée, redirige vers la liste des recettes
+            $this->addFlash('error', 'La recette demandée n\'existe pas.');
+            return $this->redirectToRoute('recipe.index');
+        }
 
-            ]
+        // Vérifie si le slug correspond à celui de la recette
+        if ($recipe->getSlug() !== $slug) {
+            // Si le slug ne correspond pas, redirige vers l'URL correcte
+            return $this->redirectToRoute('recipe.show', [
+                'slug' => $recipe->getSlug(),
+                'id' => $recipe->getId()
+            ], 301); // 301 est le code pour une redirection permanente
+        }
+
+        return $this->render('recipe/show.html.twig', [
+            'recipe' => $recipe
         ]);
     }
 }
