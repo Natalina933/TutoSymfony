@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Recipe;
 use App\Form\RecipeType;
+use Cocur\Slugify\Slugify;
 use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,23 +43,34 @@ final class RecipeController extends AbstractController
         ]);
     }
 
-    #[Route('/recettes/ajouter', name: 'recipe.add')]
-    public function add(EntityManagerInterface $em): Response
+    #[Route('/recettes/ajouter', name: 'recipe.add', methods: ['GET', 'POST'])]
+    public function add(Request $request, EntityManagerInterface $em): Response
     {
         $recipe = new Recipe();
-        $recipe->setTitle('Pizza');
-        $recipe->setSlug('pizza');
-        $recipe->setContent('Une pizza maison');
-        $recipe->setDuration(30);
-        $recipe->setCreatedAt(new \DateTimeImmutable());
-        $recipe->setUpdatedAt(new \DateTimeImmutable());
+        $form = $this->createForm(RecipeType::class, $recipe);
+        $form->handleRequest($request);
 
-        $em->persist($recipe);
-        $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Générer un slug valide à partir du titre
+            $slugify = new Slugify();
+            $slug = $slugify->slugify($recipe->getTitle());
+            $recipe->setSlug($slug);
 
-        return $this->redirectToRoute('recipe.index');
+            // Définir les dates de création et mise à jour
+            $recipe->setCreatedAt(new \DateTimeImmutable());
+            $recipe->setUpdatedAt(new \DateTimeImmutable());
+
+            $em->persist($recipe);
+            $em->flush();
+
+            $this->addFlash('success', 'La recette a été ajoutée avec succès.');
+            return $this->redirectToRoute('recipe.show', ['id' => $recipe->getId(), 'slug' => $recipe->getSlug()]);
+        }
+
+        return $this->render('recipe/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
-
     #[Route('/recettes/supprimer/{id}', name: 'recipe.delete')]
     public function delete(EntityManagerInterface $em, int $id): Response
     {
@@ -73,7 +85,7 @@ final class RecipeController extends AbstractController
         return $this->redirectToRoute('recipe.index');
     }
 
-    #[Route('/recettes/{slug}-{id}', name: 'recipe.show', requirements: ['slug' => '[a-z0-9\-]+', 'id' => '\d+'])]
+    #[Route('/recettes/{slug}-{id}', name: 'recipe.show', requirements: ['slug' => '[\w\-]+', 'id' => '\d+'])]
     public function show(string $slug, int $id, RecipeRepository $repository): Response
     {
         $recipe = $repository->find($id);
