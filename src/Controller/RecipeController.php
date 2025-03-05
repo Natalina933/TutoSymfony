@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Recipe;
+use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,23 +13,35 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class RecipeController extends AbstractController
 {
-    /**
-     * Affiche la liste des recettes qui prennent moins de 50 minutes à faire.
-     */
     #[Route('/recettes', name: 'recipe.index')]
     public function index(RecipeRepository $repository): Response
     {
-        // Récupère les recettes qui prennent moins de 50 minutes à faire
         $recipes = $repository->findRecipesByDuration(50);
-        // dd($repository->findTotalDuration());
         return $this->render('recipe/index.html.twig', [
             'recipes' => $recipes,
         ]);
     }
 
-    /**
-     * Ajoute une nouvelle recette à la base de données.
-     */
+    #[Route("/recettes/{id}/modifier", name: "recipe.edit", methods: ["GET", "POST"])]
+    public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(RecipeType::class, $recipe);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $recipe->setUpdatedAt(new \DateTimeImmutable());
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La recette a été modifiée avec succès.');
+            return $this->redirectToRoute('recipe.show', ['id' => $recipe->getId(), 'slug' => $recipe->getSlug()]);
+        }
+
+        return $this->render('recipe/edit.html.twig', [
+            'recipe' => $recipe,
+            'form' => $form->createView(),
+        ]);
+    }
+
     #[Route('/recettes/ajouter', name: 'recipe.add')]
     public function add(EntityManagerInterface $em): Response
     {
@@ -46,9 +59,6 @@ final class RecipeController extends AbstractController
         return $this->redirectToRoute('recipe.index');
     }
 
-    /**
-     * Supprime une recette de la base de données.
-     */
     #[Route('/recettes/supprimer/{id}', name: 'recipe.delete')]
     public function delete(EntityManagerInterface $em, int $id): Response
     {
@@ -63,9 +73,6 @@ final class RecipeController extends AbstractController
         return $this->redirectToRoute('recipe.index');
     }
 
-    /**
-     * Affiche une recette.
-     */
     #[Route('/recettes/{slug}-{id}', name: 'recipe.show', requirements: ['slug' => '[a-z0-9\-]+', 'id' => '\d+'])]
     public function show(string $slug, int $id, RecipeRepository $repository): Response
     {
