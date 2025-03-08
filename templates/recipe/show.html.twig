@@ -15,12 +15,16 @@
 	<p>{{ recipe.content| nl2br}}</p>
 
 	{# {% if recipe.user is not empty %}
-			<p>Créée par :
-				{{ recipe.user.username }}</p>
-		{% else %}
-			<p>Créée par : Inconnu</p>
-		{% endif %} #}
+				<p>Créée par :
+					{{ recipe.user.username }}</p>
+			{% else %}
+				<p>Créée par : Inconnu</p>
+			{% endif %} #}
 
 	<p>Ajoutée le :
 		{{ recipe.createdAt|date('d/m/Y') }}</p>
+	<a href="{{ path('recipe.edit', {'id': recipe.id}) }}" class="btn btn-primary">
+		Modifier la recette
+	</a>
+
 {% endblock %}
