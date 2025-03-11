@@ -17,11 +17,12 @@ final class RecipeController extends AbstractController
     #[Route('/recettes', name: 'recipe.index')]
     public function index(RecipeRepository $repository): Response
     {
-        $recipes = $repository->findRecipesByDuration(50);
+        $recipes = $repository->findBy([], ['createdAt' => 'DESC']); // Trier par date de création (plus récent en premier)
         return $this->render('recipe/index.html.twig', [
             'recipes' => $recipes,
         ]);
     }
+
 
     #[Route("/recettes/{id}/modifier", name: "recipe.edit", methods: ["GET", "POST"])]
     public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response

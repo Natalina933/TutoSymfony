@@ -5,26 +5,26 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Liste des recettes</h1>
+	<h1>Détails de la recette</h1>
 
-	<h2>Recette
-		{{ recipe.id }}
-		:
-		{{ recipe.title }}</h2>
+	<h2>{{ recipe.title }}</h2>
 
-	<p>{{ recipe.content| nl2br}}</p>
+	<p>{{ recipe.content|nl2br }}</p>
 
-	{# {% if recipe.user is not empty %}
-				<p>Créée par :
-					{{ recipe.user.username }}</p>
-			{% else %}
-				<p>Créée par : Inconnu</p>
-			{% endif %} #}
+	<p>Durée :
+		{{ recipe.duration }}
+		minutes</p>
 
 	<p>Ajoutée le :
-		{{ recipe.createdAt|date('d/m/Y') }}</p>
+		{{ recipe.createdAt|date('d/m/Y à H:i') }}</p>
+
+	{% if recipe.updatedAt is not null %}
+		<p>Dernière mise à jour :
+			{{ recipe.updatedAt|date('d/m/Y à H:i', 'Europe/Paris') }}
+		</p>
+	{% endif %}
+
 	<a href="{{ path('recipe.edit', {'id': recipe.id}) }}" class="btn btn-primary">
 		Modifier la recette
 	</a>
-
 {% endblock %}
