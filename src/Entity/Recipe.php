@@ -4,8 +4,13 @@ namespace App\Entity;
 
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
+#[UniqueEntity('title')]
+#[UniqueEntity('slug')]
+
 class Recipe
 {
     #[ORM\Id]
@@ -14,12 +19,17 @@ class Recipe
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 5, max: 255)]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 10, max: 255)]
+    #[Assert\Regex(pattern: '/^[a-z0-9-]+$/', message: 'Le slug doit contenir uniquement des lettres minuscules, des chiffres et des tirets.')]
     private ?string $slug = null;
 
     #[ORM\Column(type: "text")]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 5)]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -29,6 +39,9 @@ class Recipe
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
+    #[Assert\LessThan(1440)]
     private ?int $duration = null;
 
     public function getId(): ?int

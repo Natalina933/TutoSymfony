@@ -23,19 +23,12 @@ class RecipeType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'required' => false,
-                'constraints' => new Length(min: 10, max: 255),
                 'label' => 'Titre de la recette'
             ])
             ->add('slug', TextType::class, [
                 'label' => 'Slug de la recette',
                 'required' => false,
-                'constraints' => [
-                    new Length(min: 5, max: 255),
-                    new Regex([
-                        'pattern' => '/^[a-z0-9-]+$/',
-                        'message' => 'Le slug doit contenir uniquement des lettres minuscules, des chiffres et des tirets.'
-                    ])
-                ]
+
             ])
             ->add('content', TextareaType::class, [
                 'label' => 'Contenu de la recette'
