@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class RecipeType extends AbstractType
 {
@@ -27,7 +28,14 @@ class RecipeType extends AbstractType
             ])
             ->add('slug', TextType::class, [
                 'label' => 'Slug de la recette',
-                'required' => false
+                'required' => false,
+                'constraints' => [
+                    new Length(min: 5, max: 255),
+                    new Regex([
+                        'pattern' => '/^[a-z0-9-]+$/',
+                        'message' => 'Le slug doit contenir uniquement des lettres minuscules, des chiffres et des tirets.'
+                    ])
+                ]
             ])
             ->add('content', TextareaType::class, [
                 'label' => 'Contenu de la recette'
