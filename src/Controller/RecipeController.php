@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Recipe;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use App\Form\RecipeType;
-use Cocur\Slugify\Slugify;
 use App\Repository\RecipeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,8 +27,8 @@ final class RecipeController extends AbstractController
     public function edit(Request $request, Recipe $recipe, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(RecipeType::class, $recipe);
-        $form->handleRequest($request);
 
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $recipe->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->flush();
@@ -52,25 +52,27 @@ final class RecipeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Générer un slug valide à partir du titre
-            $slugify = new Slugify();
-            $slug = $slugify->slugify($recipe->getTitle());
-            $recipe->setSlug($slug);
+            $slugger = new AsciiSlugger();
+            $recipe->setSlug($slugger->slug($recipe->getTitle())->lower());
 
             // Définir les dates de création et mise à jour
             $recipe->setCreatedAt(new \DateTimeImmutable());
             $recipe->setUpdatedAt(new \DateTimeImmutable());
 
+            // Sauvegarder en base de données
             $em->persist($recipe);
             $em->flush();
 
-            $this->addFlash('success', 'La recette a été ajoutée avec succès.');
-            return $this->redirectToRoute('recipe.show', ['id' => $recipe->getId(), 'slug' => $recipe->getSlug()]);
+            // Redirection après ajout
+            return $this->redirectToRoute('recipe.index');
         }
 
+        // Afficher le formulaire si non soumis ou invalide
         return $this->render('recipe/add.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
     #[Route('/recettes/supprimer/{id}', name: 'recipe.delete')]
     public function delete(EntityManagerInterface $em, int $id): Response
     {
