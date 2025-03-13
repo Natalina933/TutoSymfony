@@ -31,7 +31,9 @@ class RecipeType extends AbstractType
 
             ])
             ->add('content', TextareaType::class, [
-                'label' => 'Contenu de la recette'
+                'label' => 'Contenu de la recette',
+                'empty_data' => ''
+                // empty data autorise valeur vide
             ])
             ->add('duration', IntegerType::class, [
                 'label' => 'Durée (minutes)'
