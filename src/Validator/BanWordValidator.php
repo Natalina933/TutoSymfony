@@ -14,11 +14,15 @@ final class BanWordValidator extends ConstraintValidator
         if (null === $value || '' === $value) {
             return;
         }
-
-        // TODO: implement the validation here
-        $this->context->buildViolation($constraint->message)
-            ->setParameter('{{ value }}', $value)
-            ->addViolation()
-        ;
+$value = strtolower($value);
+        foreach ($constraint->bannedWords as $bannedWord) {
+            if (stripos($value, $bannedWord) !== false) {
+                $this->context->buildViolation($constraint->message)
+                    ->setParameter('{{ bannedWord }}', $bannedWord)
+                    ->setParameter('{{ value }}', $value)
+                    ->addViolation();
+                return;
+            }
+        }
     }
 }

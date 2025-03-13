@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\RecipeRepository;
+use App\Validator\BanWord;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,6 +21,8 @@ class Recipe
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5, max: 255)]
+    #[Assert\NotBlank]
+    #[BanWord()]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
